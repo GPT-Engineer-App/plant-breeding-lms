@@ -15,7 +15,7 @@ import {
 
 const Quizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
-  const [newQuiz, setNewQuiz] = useState({ title: "", question: "", options: ["", "", "", ""] });
+  const [newQuiz, setNewQuiz] = useState({ title: "", questions: [] });
   const [selectedQuiz, setSelectedQuiz] = useState(null);
 
   useEffect(() => {
@@ -23,24 +23,20 @@ const Quizzes = () => {
     const mockExistingQuizzes = [
       {
         title: "Existing Quiz 1",
-        question: "What is the process of developing new plant types?",
-        options: [
-          "Plant breeding",
-          "Plant growth",
-          "Plant harvesting",
-          "Plant watering"
+        questions: [
+          {
+            question: "What is the process of developing new plant types?",
+            options: [
+              "Plant breeding",
+              "Plant growth",
+              "Plant harvesting",
+              "Plant watering"
+            ]
+          },
+          // ... (add more questions to make it 10)
         ]
       },
-      {
-        title: "Existing Quiz 2",
-        question: "Which of the following is a type of plant breeding method?",
-        options: [
-          "Selective breeding",
-          "Random breeding",
-          "Forced breeding",
-          "Natural breeding"
-        ]
-      }
+      // ... (you can add more existing quizzes if needed)
     ];
 
     setQuizzes(mockExistingQuizzes);
@@ -51,16 +47,18 @@ const Quizzes = () => {
 
   const generateNewQuiz = () => {
     // In a real application, this would call an API to generate a quiz
-    // For now, we'll create a mock generated quiz
+    // For now, we'll create a mock generated quiz with 10 MCQs
     const generatedQuiz = {
       title: `Generated Quiz ${quizzes.length + 1}`,
-      question: "What is the main purpose of genetic engineering in plants?",
-      options: [
-        "To increase crop yield",
-        "To improve pest resistance",
-        "To enhance nutritional content",
-        "All of the above"
-      ]
+      questions: Array(10).fill().map((_, index) => ({
+        question: `Generated Question ${index + 1}`,
+        options: [
+          `Option A for Q${index + 1}`,
+          `Option B for Q${index + 1}`,
+          `Option C for Q${index + 1}`,
+          `Option D for Q${index + 1}`
+        ]
+      }))
     };
 
     setQuizzes(prevQuizzes => [...prevQuizzes, generatedQuiz]);
@@ -71,17 +69,35 @@ const Quizzes = () => {
     setNewQuiz((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleOptionChange = (index, value) => {
+  const handleQuestionChange = (index, field, value) => {
     setNewQuiz((prev) => ({
       ...prev,
-      options: prev.options.map((opt, i) => (i === index ? value : opt)),
+      questions: prev.questions.map((q, i) => 
+        i === index ? { ...q, [field]: value } : q
+      )
+    }));
+  };
+
+  const handleOptionChange = (questionIndex, optionIndex, value) => {
+    setNewQuiz((prev) => ({
+      ...prev,
+      questions: prev.questions.map((q, i) => 
+        i === questionIndex ? {
+          ...q,
+          options: q.options.map((opt, j) => j === optionIndex ? value : opt)
+        } : q
+      )
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (newQuiz.questions.length !== 10) {
+      alert("A quiz must have exactly 10 questions.");
+      return;
+    }
     setQuizzes((prev) => [...prev, newQuiz]);
-    setNewQuiz({ title: "", question: "", options: ["", "", "", ""] });
+    setNewQuiz({ title: "", questions: Array(10).fill().map(() => ({ question: "", options: ["", "", "", ""] })) });
   };
 
   const handleDeleteQuiz = (index) => {
@@ -112,25 +128,26 @@ const Quizzes = () => {
                 required
               />
             </div>
-            <div>
-              <Label htmlFor="question">Question</Label>
-              <Textarea
-                id="question"
-                name="question"
-                value={newQuiz.question}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            {newQuiz.options.map((option, index) => (
-              <div key={index}>
-                <Label htmlFor={`option-${index}`}>Option {index + 1}</Label>
-                <Input
-                  id={`option-${index}`}
-                  value={option}
-                  onChange={(e) => handleOptionChange(index, e.target.value)}
+            {newQuiz.questions.map((question, qIndex) => (
+              <div key={qIndex} className="border p-4 rounded">
+                <Label htmlFor={`question-${qIndex}`}>Question {qIndex + 1}</Label>
+                <Textarea
+                  id={`question-${qIndex}`}
+                  value={question.question}
+                  onChange={(e) => handleQuestionChange(qIndex, 'question', e.target.value)}
                   required
                 />
+                {question.options.map((option, oIndex) => (
+                  <div key={oIndex}>
+                    <Label htmlFor={`option-${qIndex}-${oIndex}`}>Option {oIndex + 1}</Label>
+                    <Input
+                      id={`option-${qIndex}-${oIndex}`}
+                      value={option}
+                      onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
+                      required
+                    />
+                  </div>
+                ))}
               </div>
             ))}
             <Button type="submit">Create Quiz</Button>
@@ -156,19 +173,23 @@ const Quizzes = () => {
                             <Eye className="h-4 w-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                           <DialogHeader>
                             <DialogTitle>{selectedQuiz?.title}</DialogTitle>
                           </DialogHeader>
                           <div className="mt-4">
-                            <p className="font-semibold mb-2">Question:</p>
-                            <p>{selectedQuiz?.question}</p>
-                            <p className="font-semibold mt-4 mb-2">Options:</p>
-                            <ul className="list-disc pl-5">
-                              {selectedQuiz?.options.map((option, optionIndex) => (
-                                <li key={optionIndex}>{option}</li>
-                              ))}
-                            </ul>
+                            {selectedQuiz?.questions.map((q, qIndex) => (
+                              <div key={qIndex} className="mb-4">
+                                <p className="font-semibold mb-2">Question {qIndex + 1}:</p>
+                                <p>{q.question}</p>
+                                <p className="font-semibold mt-2 mb-1">Options:</p>
+                                <ul className="list-disc pl-5">
+                                  {q.options.map((option, optionIndex) => (
+                                    <li key={optionIndex}>{option}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
                           </div>
                         </DialogContent>
                       </Dialog>

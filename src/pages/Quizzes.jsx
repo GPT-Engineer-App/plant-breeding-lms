@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,35 @@ import { Trash2, Edit } from "lucide-react";
 const Quizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [newQuiz, setNewQuiz] = useState({ title: "", question: "", options: ["", "", "", ""] });
+
+  useEffect(() => {
+    // TODO: Fetch generated quizzes from the backend
+    // For now, we'll use mock data
+    const mockGeneratedQuizzes = [
+      {
+        title: "Generated Quiz 1",
+        question: "What is the primary goal of plant breeding?",
+        options: [
+          "To increase crop yield",
+          "To improve disease resistance",
+          "To enhance nutritional content",
+          "All of the above"
+        ]
+      },
+      {
+        title: "Generated Quiz 2",
+        question: "Which of the following is NOT a common method in plant breeding?",
+        options: [
+          "Selective breeding",
+          "Genetic modification",
+          "Hybridization",
+          "Photosynthesis manipulation"
+        ]
+      }
+    ];
+
+    setQuizzes(mockGeneratedQuizzes);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -84,18 +113,26 @@ const Quizzes = () => {
         </CardHeader>
         <CardContent>
           {quizzes.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-4">
               {quizzes.map((quiz, index) => (
-                <li key={index} className="flex items-center justify-between">
-                  <span>{quiz.title}</span>
-                  <div>
-                    <Button variant="ghost" size="sm" className="mr-2">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDeleteQuiz(index)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                <li key={index} className="border-b pb-4 last:border-b-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold">{quiz.title}</h3>
+                    <div>
+                      <Button variant="ghost" size="sm" className="mr-2">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteQuiz(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
+                  <p className="mb-2"><strong>Question:</strong> {quiz.question}</p>
+                  <ul className="list-disc pl-5">
+                    {quiz.options.map((option, optionIndex) => (
+                      <li key={optionIndex}>{option}</li>
+                    ))}
+                  </ul>
                 </li>
               ))}
             </ul>

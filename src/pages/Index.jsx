@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2 } from "lucide-react";
+import { Trash2, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [files, setFiles] = useState([]);
+  const navigate = useNavigate();
 
   const handleFileUpload = (event) => {
     const newFiles = Array.from(event.target.files);
@@ -15,6 +17,13 @@ const Index = () => {
 
   const handleDeleteFile = (index) => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
+  const handleGenerateQuizzes = () => {
+    // TODO: Implement quiz generation logic
+    console.log("Generating quizzes from uploaded files...");
+    // For now, we'll just navigate to the Quizzes page
+    navigate("/quizzes");
   };
 
   return (
@@ -33,9 +42,18 @@ const Index = () => {
               type="file" 
               accept=".pdf" 
               onChange={handleFileUpload} 
-              multiple // Enable multiple file selection
+              multiple
             />
           </div>
+          {files.length > 0 && (
+            <Button 
+              onClick={handleGenerateQuizzes}
+              className="mt-4"
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Generate Quizzes from Files
+            </Button>
+          )}
         </CardContent>
       </Card>
 

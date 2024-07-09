@@ -4,40 +4,67 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, Edit } from "lucide-react";
+import { Trash2, Edit, Eye } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const Quizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [newQuiz, setNewQuiz] = useState({ title: "", question: "", options: ["", "", "", ""] });
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
 
   useEffect(() => {
-    // TODO: Fetch generated quizzes from the backend
-    // For now, we'll use mock data
-    const mockGeneratedQuizzes = [
+    // Fetch existing quizzes (mock data for now)
+    const mockExistingQuizzes = [
       {
-        title: "Generated Quiz 1",
-        question: "What is the primary goal of plant breeding?",
+        title: "Existing Quiz 1",
+        question: "What is the process of developing new plant types?",
         options: [
-          "To increase crop yield",
-          "To improve disease resistance",
-          "To enhance nutritional content",
-          "All of the above"
+          "Plant breeding",
+          "Plant growth",
+          "Plant harvesting",
+          "Plant watering"
         ]
       },
       {
-        title: "Generated Quiz 2",
-        question: "Which of the following is NOT a common method in plant breeding?",
+        title: "Existing Quiz 2",
+        question: "Which of the following is a type of plant breeding method?",
         options: [
           "Selective breeding",
-          "Genetic modification",
-          "Hybridization",
-          "Photosynthesis manipulation"
+          "Random breeding",
+          "Forced breeding",
+          "Natural breeding"
         ]
       }
     ];
 
-    setQuizzes(mockGeneratedQuizzes);
+    setQuizzes(mockExistingQuizzes);
+
+    // Generate a new quiz when the component mounts (simulating app open)
+    generateNewQuiz();
   }, []);
+
+  const generateNewQuiz = () => {
+    // In a real application, this would call an API to generate a quiz
+    // For now, we'll create a mock generated quiz
+    const generatedQuiz = {
+      title: `Generated Quiz ${quizzes.length + 1}`,
+      question: "What is the main purpose of genetic engineering in plants?",
+      options: [
+        "To increase crop yield",
+        "To improve pest resistance",
+        "To enhance nutritional content",
+        "All of the above"
+      ]
+    };
+
+    setQuizzes(prevQuizzes => [...prevQuizzes, generatedQuiz]);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,6 +86,10 @@ const Quizzes = () => {
 
   const handleDeleteQuiz = (index) => {
     setQuizzes((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleViewQuiz = (quiz) => {
+    setSelectedQuiz(quiz);
   };
 
   return (
@@ -119,6 +150,28 @@ const Quizzes = () => {
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-lg font-semibold">{quiz.title}</h3>
                     <div>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="mr-2" onClick={() => handleViewQuiz(quiz)}>
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>{selectedQuiz?.title}</DialogTitle>
+                          </DialogHeader>
+                          <div className="mt-4">
+                            <p className="font-semibold mb-2">Question:</p>
+                            <p>{selectedQuiz?.question}</p>
+                            <p className="font-semibold mt-4 mb-2">Options:</p>
+                            <ul className="list-disc pl-5">
+                              {selectedQuiz?.options.map((option, optionIndex) => (
+                                <li key={optionIndex}>{option}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                       <Button variant="ghost" size="sm" className="mr-2">
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -127,12 +180,6 @@ const Quizzes = () => {
                       </Button>
                     </div>
                   </div>
-                  <p className="mb-2"><strong>Question:</strong> {quiz.question}</p>
-                  <ul className="list-disc pl-5">
-                    {quiz.options.map((option, optionIndex) => (
-                      <li key={optionIndex}>{option}</li>
-                    ))}
-                  </ul>
                 </li>
               ))}
             </ul>

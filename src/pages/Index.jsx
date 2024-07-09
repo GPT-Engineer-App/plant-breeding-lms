@@ -28,13 +28,13 @@ const Index = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Plant Breeding and Genetics LMS</h1>
+      <h1 className="text-3xl font-bold mb-6 gradient-text">Plant Breeding and Genetics LMS</h1>
       
-      <Card className="mb-6">
-        <CardHeader>
+      <Card className="mb-6 gradient-border">
+        <CardHeader className="gradient-bg text-white">
           <CardTitle>Upload Files</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="file-upload">Upload PDFs</Label>
             <Input 
@@ -43,12 +43,14 @@ const Index = () => {
               accept=".pdf" 
               onChange={handleFileUpload} 
               multiple
+              className="border-primary"
             />
           </div>
           {files.length > 0 && (
             <Button 
               onClick={handleGenerateQuizzes}
               className="mt-4"
+              variant="gradient"
             >
               <FileText className="mr-2 h-4 w-4" />
               Generate Quizzes from Files
@@ -57,17 +59,17 @@ const Index = () => {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
+      <Card className="gradient-border">
+        <CardHeader className="gradient-bg text-white">
           <CardTitle>Uploaded Files</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           {files.length > 0 ? (
             <ul className="space-y-2">
               {files.map((file, index) => (
-                <li key={index} className="flex items-center justify-between">
+                <li key={index} className="flex items-center justify-between p-2 bg-white rounded-md shadow">
                   <span>{file.name}</span>
-                  <Button variant="ghost" size="sm" onClick={() => handleDeleteFile(index)}>
+                  <Button variant="ghost" size="sm" onClick={() => handleDeleteFile(index)} className="text-primary hover:text-primary/80">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </li>

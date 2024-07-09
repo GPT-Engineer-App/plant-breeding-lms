@@ -18,6 +18,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        gradient: "bg-gradient-to-r from-[#cc2b5e] to-[#753a88] text-white hover:from-[#cc2b5e]/90 hover:to-[#753a88]/90",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -36,11 +37,12 @@ const buttonVariants = cva(
 const Button = React.forwardRef(({ className, variant, size, asChild = false, ...props }, ref) => {
   const Comp = asChild ? Slot : "button"
   return (
-    (<Comp
+    <Comp
       className={cn(buttonVariants({ variant, size, className }))}
       ref={ref}
-      {...props} />)
-  );
+      {...props}
+    />
+  )
 })
 Button.displayName = "Button"
 

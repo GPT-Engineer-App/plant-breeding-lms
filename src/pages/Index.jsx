@@ -27,8 +27,14 @@ const Index = () => {
         </CardHeader>
         <CardContent>
           <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="file-upload">Upload PDF</Label>
-            <Input id="file-upload" type="file" accept=".pdf" onChange={handleFileUpload} />
+            <Label htmlFor="file-upload">Upload PDFs</Label>
+            <Input 
+              id="file-upload" 
+              type="file" 
+              accept=".pdf" 
+              onChange={handleFileUpload} 
+              multiple // Enable multiple file selection
+            />
           </div>
         </CardContent>
       </Card>

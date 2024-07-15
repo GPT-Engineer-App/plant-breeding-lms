@@ -3,16 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { uploadFile, getPermanentFiles, deleteFile } from "@/utils/developerFileUpload";
 import { Trash2 } from "lucide-react";
+import { uploadFile, getPermanentFiles, deleteFile, getStorageUsage } from "@/utils/developerFileUpload";
+import { Progress } from "@/components/ui/progress";
 
 const DeveloperUpload = () => {
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
   const [permanentFiles, setPermanentFiles] = useState([]);
+  const [storageUsage, setStorageUsage] = useState({ used: 0, total: 0, remaining: 0 });
 
   useEffect(() => {
     updatePermanentFiles();
+    updateStorageUsage();
   }, []);
 
   const handleFileChange = (e) => {
@@ -30,6 +33,7 @@ const DeveloperUpload = () => {
       setUploadStatus(result.message);
       setFile(null);
       updatePermanentFiles();
+      updateStorageUsage();
     } catch (error) {
       setUploadStatus(error.message);
     }
@@ -39,15 +43,30 @@ const DeveloperUpload = () => {
     setPermanentFiles(getPermanentFiles());
   };
 
+  const updateStorageUsage = () => {
+    setStorageUsage(getStorageUsage());
+  };
+
   const handleDeleteFile = async (fileName) => {
     try {
       const result = await deleteFile(fileName);
       setUploadStatus(result.message);
       updatePermanentFiles();
+      updateStorageUsage();
     } catch (error) {
       setUploadStatus("Error deleting file.");
     }
   };
+
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const storagePercentage = (storageUsage.used / storageUsage.total) * 100;
 
   return (
     <div className="container mx-auto p-4">
@@ -74,6 +93,20 @@ const DeveloperUpload = () => {
         </CardContent>
       </Card>
 
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Storage Usage</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Progress value={storagePercentage} className="mb-2" />
+          <p>
+            {formatBytes(storageUsage.used)} / {formatBytes(storageUsage.total)} used
+            ({storagePercentage.toFixed(2)}%)
+          </p>
+          <p>Remaining: {formatBytes(storageUsage.remaining)}</p>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Permanent Files</CardTitle>
@@ -83,7 +116,7 @@ const DeveloperUpload = () => {
             <ul className="space-y-2">
               {permanentFiles.map((file, index) => (
                 <li key={index} className="flex items-center justify-between">
-                  <span>{file.name}</span>
+                  <span>{file.name} ({formatBytes(file.size)})</span>
                   <Button variant="ghost" size="sm" onClick={() => handleDeleteFile(file.name)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>

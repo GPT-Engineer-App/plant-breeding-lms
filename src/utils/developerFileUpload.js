@@ -1,16 +1,26 @@
-// This file is for demonstration purposes only.
-// In a real-world scenario, this would be a server-side implementation.
+// This file simulates a server-side implementation for file storage.
+// In a real-world scenario, this would interact with a database or file system.
 
-let uploadedFiles = [];
+let permanentFiles = [
+  { name: "Introduction_to_Plant_Breeding.pdf", type: "application/pdf" },
+  { name: "Genetics_Basics.docx", type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+  { name: "Crop_Improvement_Techniques.pptx", type: "application/vnd.openxmlformats-officedocument.presentationml.presentation" },
+];
 
 export const uploadFile = (file) => {
-  // Simulating file upload process
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (file && file.name) {
-        uploadedFiles.push(file);
-        console.log(`File "${file.name}" uploaded successfully.`);
-        resolve({ success: true, message: `File "${file.name}" uploaded successfully.` });
+        // Check if the file already exists
+        const existingFile = permanentFiles.find(f => f.name === file.name);
+        if (!existingFile) {
+          permanentFiles.push({ name: file.name, type: file.type });
+          console.log(`File "${file.name}" uploaded and stored permanently.`);
+          resolve({ success: true, message: `File "${file.name}" uploaded and stored permanently.` });
+        } else {
+          console.log(`File "${file.name}" already exists in permanent storage.`);
+          resolve({ success: true, message: `File "${file.name}" already exists in permanent storage.` });
+        }
       } else {
         reject({ success: false, message: "Invalid file." });
       }
@@ -18,11 +28,21 @@ export const uploadFile = (file) => {
   });
 };
 
-export const getUploadedFiles = () => {
-  return uploadedFiles;
+export const getPermanentFiles = () => {
+  return permanentFiles;
 };
 
-export const clearUploadedFiles = () => {
-  uploadedFiles = [];
-  console.log("All uploaded files have been cleared.");
+export const deleteFile = (fileName) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const initialLength = permanentFiles.length;
+      permanentFiles = permanentFiles.filter(file => file.name !== fileName);
+      if (permanentFiles.length < initialLength) {
+        console.log(`File "${fileName}" has been deleted from permanent storage.`);
+        resolve({ success: true, message: `File "${fileName}" has been deleted from permanent storage.` });
+      } else {
+        resolve({ success: false, message: `File "${fileName}" not found in permanent storage.` });
+      }
+    }, 500);
+  });
 };

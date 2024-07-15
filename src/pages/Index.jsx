@@ -1,27 +1,14 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const [files, setFiles] = useState([]);
   const navigate = useNavigate();
-
-  const handleFileUpload = (event) => {
-    const newFiles = Array.from(event.target.files);
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-  };
-
-  const handleDeleteFile = (index) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  };
 
   const handleGenerateQuizzes = () => {
     // TODO: Implement quiz generation logic
-    console.log("Generating quizzes from uploaded files...");
+    console.log("Generating quizzes from developer-uploaded files...");
     // For now, we'll just navigate to the Quizzes page
     navigate("/quizzes");
   };
@@ -32,52 +19,34 @@ const Index = () => {
       
       <Card className="mb-6 gradient-border">
         <CardHeader className="gradient-bg text-white">
-          <CardTitle>Upload Files</CardTitle>
+          <CardTitle>Welcome to the Learning Management System</CardTitle>
         </CardHeader>
         <CardContent className="mt-4">
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="file-upload">Upload PDFs</Label>
-            <Input 
-              id="file-upload" 
-              type="file" 
-              accept=".pdf" 
-              onChange={handleFileUpload} 
-              multiple
-              className="border-primary"
-            />
-          </div>
-          {files.length > 0 && (
-            <Button 
-              onClick={handleGenerateQuizzes}
-              className="mt-4"
-              variant="gradient"
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              Generate Quizzes from Files
-            </Button>
-          )}
+          <p className="mb-4">
+            This LMS is designed to help you learn about Plant Breeding and Genetics. 
+            Explore the available quizzes and assignments to enhance your knowledge.
+          </p>
+          <Button 
+            onClick={handleGenerateQuizzes}
+            className="mt-4"
+            variant="gradient"
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            View Available Quizzes
+          </Button>
         </CardContent>
       </Card>
 
       <Card className="gradient-border">
         <CardHeader className="gradient-bg text-white">
-          <CardTitle>Uploaded Files</CardTitle>
+          <CardTitle>Getting Started</CardTitle>
         </CardHeader>
         <CardContent className="mt-4">
-          {files.length > 0 ? (
-            <ul className="space-y-2">
-              {files.map((file, index) => (
-                <li key={index} className="flex items-center justify-between p-2 bg-white rounded-md shadow">
-                  <span>{file.name}</span>
-                  <Button variant="ghost" size="sm" onClick={() => handleDeleteFile(index)} className="text-primary hover:text-primary/80">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No files uploaded yet.</p>
-          )}
+          <ul className="list-disc pl-5 space-y-2">
+            <li>Navigate to the Quizzes section to test your knowledge</li>
+            <li>Check the Assignments page for any pending tasks</li>
+            <li>Use the Chatbot for quick answers to your questions</li>
+          </ul>
         </CardContent>
       </Card>
     </div>

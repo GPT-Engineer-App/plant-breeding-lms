@@ -1,13 +1,15 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Home, FileText, BookOpen, MessageCircle } from "lucide-react";
+import { Home, FileText, BookOpen, MessageCircle, Upload } from "lucide-react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Layout from "./layouts/sidebar";
 import Index from "./pages/Index.jsx";
 import Quizzes from "./pages/Quizzes.jsx";
 import Assignments from "./pages/Assignments.jsx";
 import Chatbot from "./components/Chatbot.jsx";
+import DeveloperUpload from "./pages/DeveloperUpload.jsx";
+
 const queryClient = new QueryClient();
 
 export const navItems = [
@@ -31,6 +33,11 @@ export const navItems = [
     to: "/chatbot",
     icon: <MessageCircle className="h-4 w-4" />,
   },
+  {
+    title: "Developer Upload",
+    to: "/developer-upload",
+    icon: <Upload className="h-4 w-4" />,
+  },
 ];
 
 const App = () => {
@@ -45,6 +52,7 @@ const App = () => {
               <Route path="quizzes" element={<Quizzes />} />
               <Route path="assignments" element={<Assignments />} />
               <Route path="chatbot" element={<Chatbot />} />
+              <Route path="developer-upload" element={<DeveloperUpload />} />
             </Route>
           </Routes>
         </Router>

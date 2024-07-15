@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { uploadFile, getUploadedFiles, clearUploadedFiles } from "@/utils/developerFileUpload";
+import { uploadFile, getPermanentFiles, deleteFile } from "@/utils/developerFileUpload";
+import { Trash2 } from "lucide-react";
 
 const DeveloperUpload = () => {
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [permanentFiles, setPermanentFiles] = useState([]);
+
+  useEffect(() => {
+    updatePermanentFiles();
+  }, []);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -24,20 +29,24 @@ const DeveloperUpload = () => {
       const result = await uploadFile(file);
       setUploadStatus(result.message);
       setFile(null);
-      updateUploadedFiles();
+      updatePermanentFiles();
     } catch (error) {
       setUploadStatus(error.message);
     }
   };
 
-  const updateUploadedFiles = () => {
-    setUploadedFiles(getUploadedFiles());
+  const updatePermanentFiles = () => {
+    setPermanentFiles(getPermanentFiles());
   };
 
-  const handleClearFiles = () => {
-    clearUploadedFiles();
-    setUploadedFiles([]);
-    setUploadStatus("All uploaded files have been cleared.");
+  const handleDeleteFile = async (fileName) => {
+    try {
+      const result = await deleteFile(fileName);
+      setUploadStatus(result.message);
+      updatePermanentFiles();
+    } catch (error) {
+      setUploadStatus("Error deleting file.");
+    }
   };
 
   return (
@@ -67,20 +76,22 @@ const DeveloperUpload = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Uploaded Files</CardTitle>
+          <CardTitle>Permanent Files</CardTitle>
         </CardHeader>
         <CardContent>
-          {uploadedFiles.length > 0 ? (
-            <div>
-              <ul className="list-disc pl-5 mb-4">
-                {uploadedFiles.map((file, index) => (
-                  <li key={index}>{file.name}</li>
-                ))}
-              </ul>
-              <Button onClick={handleClearFiles} variant="destructive">Clear All Files</Button>
-            </div>
+          {permanentFiles.length > 0 ? (
+            <ul className="space-y-2">
+              {permanentFiles.map((file, index) => (
+                <li key={index} className="flex items-center justify-between">
+                  <span>{file.name}</span>
+                  <Button variant="ghost" size="sm" onClick={() => handleDeleteFile(file.name)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
           ) : (
-            <p>No files uploaded yet.</p>
+            <p>No files in permanent storage.</p>
           )}
         </CardContent>
       </Card>
